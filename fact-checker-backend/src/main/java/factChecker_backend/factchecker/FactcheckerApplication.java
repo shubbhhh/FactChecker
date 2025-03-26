@@ -3,8 +3,11 @@ package factChecker_backend.factchecker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import factChecker_backend.factchecker.GeminiClient.ApiRequestBody;
+
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @SpringBootApplication
 @RestController
@@ -14,20 +17,12 @@ public class FactcheckerApplication {
 		SpringApplication.run(FactcheckerApplication.class, args);
 	}
 
-	@GetMapping("/api")
-	public String demo() {
-		GeminiClient client = new GeminiClient();
-		String prompt = client.getPrompt("ABC", "DEF", "GHI");
-		// System.out.println(prompt);
-		return prompt;
-	}
-
-	@PostMapping("/api")
-	public String apiRouter() {
+	@PostMapping("/gemini")
+	public String apiRouter(@RequestBody ApiRequestBody body) {
 		try {
 			GeminiClient client = new GeminiClient();
 			
-			String result = client.checkFact(null, null, null, null);
+			String result = client.checkFact(body.getText(), body.getContextText(), body.getUrl(), body.getApiKey());
 
 			return result;
 		} catch(Exception e) {

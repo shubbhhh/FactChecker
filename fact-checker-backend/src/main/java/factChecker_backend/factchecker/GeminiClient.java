@@ -1,6 +1,25 @@
 package factChecker_backend.factchecker;
 
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
+
+import lombok.Data;
+
 public class GeminiClient {
+
+    @Data
+    public static class ApiRequestBody {
+        private String text;
+        private String contextText;
+        private String url;
+        private String apiKey;
+
+        // public String getQuery() {
+        //     System.out.println("ApiKey: "+apiKey);
+        //     return "Fact check the following selected text: "+ text + "\n\nBroader context from the page:\n" + contextText + "\n\nPage URL: " + url;
+        // }
+    }
+
     public String getPrompt(String text, String contextText, String url) {
         String prompt = "You are a multilingual fact-checking assistant. Your primary tasks are:\r\n" + //
         "\r\n" + //
@@ -33,7 +52,15 @@ public class GeminiClient {
     }
 
     public String checkFact(String text, String contextText, String url, String apiKey) {
+        Client client = Client.builder().apiKey(apiKey).build();
 
-        return "";
+        String prompt = getPrompt(text, contextText, url);
+
+        try {
+            GenerateContentResponse response = client.models.generateContent("gemini-2.0-flash-001", prompt, null);
+            return response.text();
+        } catch (Exception e) {
+            return "Something went wrong!!";
+        }
     }
 }
