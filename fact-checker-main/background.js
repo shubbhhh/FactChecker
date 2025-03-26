@@ -71,23 +71,26 @@ async function fetchPageContent(tabId) {
 
 async function factCheckWithAI(text, contextText, url, apiKey) {
   try {
-    const response = await fetch(`http://localhost:3000/ai/gemini?text=${text}&contextText=${contextText}&url=${url}`, {
-      method: 'GET',
+    const response = await fetch(`http://localhost:8080/gemini`, {
+      method: 'POST',
       headers: {
-        'content-type': 'application/json',
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text,
+        contextText,
+        url,
+        apiKey
+      })
     });
-  
-    const result = await response.json();
-    // const data = result.response.text()
-    console.log('Gemini API response:', result);
-  
-    if (result && result.length > 0) {
-      const content =result;
-      console.log('Gemini API content:', content);
-      return content;
+    
+    
+    if (response.ok) {
+      const result = await response.text();
+      console.log('Gemini API response:', result);
+      return result;
     } else {
-      throw new Error('Invalid response from Gemini API');
+      return 'Invalid response from Gemini API';
     }
   }
   catch(error) {
